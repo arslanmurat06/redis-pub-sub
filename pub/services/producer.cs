@@ -1,3 +1,4 @@
+using System.Text.Json;
 using StackExchange.Redis;
 
 public class Producer : BackgroundService
@@ -17,14 +18,15 @@ public class Producer : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var subscriber = RedisConnection.GetSubscriber();
-        var message = "Hi from Producer";
 
         while (!stoppingToken.IsCancellationRequested)
         {
 
-            _logger.LogInformation($"Producer produces message : {message}");
+            var message = new Message(Guid.NewGuid(), DateTime.UtcNow);
 
-            await subscriber.PublishAsync(Channel, message);
+            _logger.LogInformation("Producer produces message : {message}", message);
+
+            await subscriber.PublishAsync(Channel, JsonSerializer.Serialize<Message>(message));
             await Task.Delay(1000);
         }
 

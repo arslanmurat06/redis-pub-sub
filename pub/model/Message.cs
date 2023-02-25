@@ -1,0 +1,1 @@
+public sealed record Message(Guid id, DateTime createdOInUTC);

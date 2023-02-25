@@ -1,3 +1,4 @@
+using System.Text.Json;
 using StackExchange.Redis;
 
 public class Consumer : BackgroundService
@@ -18,7 +19,9 @@ public class Consumer : BackgroundService
 
         await subscriber.SubscribeAsync(Channel, (channel, message) =>
         {
-            _logger.LogInformation($"{message} taken by consumer");
+
+            var msg = JsonSerializer.Deserialize<Message>(message);
+            _logger.LogInformation("{Message} taken by consumer", msg);
         });
 
     }
